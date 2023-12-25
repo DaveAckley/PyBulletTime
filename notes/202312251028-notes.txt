@@ -1,4 +1,4 @@
-{5}  -*-  mode: text; fill-column: 50;  -*-
+{6}  -*-  mode: text; fill-column: 50;  -*-
 [0:
 
 Mon Dec 25 10:28:24 2023 Well I gave up on
@@ -40,5 +40,13 @@ working through the 'onelink' module. Moving files
 out of 'spikes/' up to the top-level, and renaming
 to simulate.py (and generate.py) to follow the
 module format.
+[5:
+
+Mon Dec 25 11:27:27 2023 And now we've done
+manylinks up to the (in my case) 16 towers. Fun!
+
+Need to break for Christmas stuff, but I owe Josh! 
+
+:5]
 
 :4]
