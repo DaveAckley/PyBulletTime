@@ -1,4 +1,4 @@
-{4}  -*-  mode: text; fill-column: 50;  -*-
+{5}  -*-  mode: text; fill-column: 50;  -*-
 [0:
 
 Mon Dec 25 10:28:24 2023 Well I gave up on
@@ -33,3 +33,12 @@ with the 'simulation' module. Time to commit I
 guess! 
 
 :3]
+[4:
+
+Mon Dec 25 11:03:51 2023 OK, got 'pyrosim' and
+working through the 'onelink' module. Moving files
+out of 'spikes/' up to the top-level, and renaming
+to simulate.py (and generate.py) to follow the
+module format.
+
+:4]
