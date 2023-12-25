@@ -1,0 +1,28 @@
+{3}  -*-  mode: text; fill-column: 50;  -*-
+[0:
+
+Mon Dec 25 10:28:24 2023 Well I gave up on
+mujoco. At least temporarily. Now following the
+very incremental r/ludobots tutorial on reddit for
+PyBullet. Go Josh Go!
+
+[1:
+
+Mon Dec 25 10:30:12 2023 (For the record,
+
+(1) pybullet didn't seem to work in a VM, so
+(2) I installed out in my 'real' 20.04, but
+(3) had some kind of numpy version problem, which
+(4) Doing 'python3 -m pip install numpy --upgrade'
+    seemed to fix.
+
+So now we're out of the VM and on 20.04)
+
+:1]
+:0]
+[2:
+
+Mon Dec 25 10:32:17 2023 Let's get a repo going
+for this, as Dr Bongard advises us.
+
+:2]
