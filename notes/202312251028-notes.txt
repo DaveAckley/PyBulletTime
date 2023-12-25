@@ -1,4 +1,4 @@
-{3}  -*-  mode: text; fill-column: 50;  -*-
+{4}  -*-  mode: text; fill-column: 50;  -*-
 [0:
 
 Mon Dec 25 10:28:24 2023 Well I gave up on
@@ -26,3 +26,10 @@ Mon Dec 25 10:32:17 2023 Let's get a repo going
 for this, as Dr Bongard advises us.
 
 :2]
+[3:
+
+Mon Dec 25 10:50:51 2023 Looks like we're done
+with the 'simulation' module. Time to commit I
+guess! 
+
+:3]
