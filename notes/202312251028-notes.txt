@@ -1,4 +1,4 @@
-{9}  -*-  mode: text; fill-column: 50;  -*-
+{10}  -*-  mode: text; fill-column: 50;  -*-
 [0:
 
 Mon Dec 25 10:28:24 2023 Well I gave up on
@@ -56,7 +56,18 @@ Wed Dec 27 01:50:00 2023 OK! On to sensors! This
 I'm here for![8:
 
 Wed Dec 27 02:28:28 2023 OK, done with sensors! On
-to motors!
+to motors![9:
+
+Wed Dec 27 03:27:30 2023 OK, done-ish with
+motors. Note I started cheating here - I didn't
+store and plot my motor variables; I just did them
+on the fly. That'll come back and bite me on the
+butt later for not thoroughly understanding my
+signals, I'm sure.
+
+Taking a break.
+
+:9]
 
 :8]
 
