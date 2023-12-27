@@ -1,4 +1,4 @@
-{6}  -*-  mode: text; fill-column: 50;  -*-
+{7}  -*-  mode: text; fill-column: 50;  -*-
 [0:
 
 Mon Dec 25 10:28:24 2023 Well I gave up on
@@ -45,7 +45,14 @@ module format.
 Mon Dec 25 11:27:27 2023 And now we've done
 manylinks up to the (in my case) 16 towers. Fun!
 
-Need to break for Christmas stuff, but I owe Josh! 
+Need to break for Christmas stuff, but I owe Josh!
+
+[6:
+
+Wed Dec 27 01:46:18 2023 OK, looks like I did step
+46 of E. Joints. Committing.
+
+:6]
 
 :5]
 
