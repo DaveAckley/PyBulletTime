@@ -1,4 +1,4 @@
-{10}  -*-  mode: text; fill-column: 50;  -*-
+{14}  -*-  mode: text; fill-column: 50;  -*-
 [0:
 
 Mon Dec 25 10:28:24 2023 Well I gave up on
@@ -78,3 +78,33 @@ Taking a break.
 :5]
 
 :4]
+[10:
+
+Wed Dec 27 12:08:16 2023 Moving the flag.
+[11:
+
+Wed Dec 27 13:46:28 2023 Setting up again.
+[12:
+
+Wed Dec 27 13:50:11 2023 OK, with a
+
+    $ python3 -m pip install pybullet
+
+and a
+
+    $ python3 -m pip install numpy --upgrade
+
+we seem to be working here, and we have our
+unrefactored open-loop three link wormbot flailing
+its way from the origin..[13:
+
+Wed Dec 27 13:53:06 2023 I think I should do the
+H. Refactoring, and then perhaps think about
+diverging toward talking to the t2s...
+
+:13]
+
+:12]
+
+:11]
+:10]
