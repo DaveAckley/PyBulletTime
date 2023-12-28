@@ -1,4 +1,4 @@
-{14}  -*-  mode: text; fill-column: 50;  -*-
+{17}  -*-  mode: text; fill-column: 50;  -*-
 [0:
 
 Mon Dec 25 10:28:24 2023 Well I gave up on
@@ -101,6 +101,27 @@ its way from the origin..[13:
 Wed Dec 27 13:53:06 2023 I think I should do the
 H. Refactoring, and then perhaps think about
 diverging toward talking to the t2s...
+[14:
+
+Thu Dec 28 11:32:21 2023 OK, well I guess I've got
+H. Refactoring working again, although I did start
+to diverge from Josh's design toward the end -
+we'll see if I regret that..[15:
+
+Thu Dec 28 11:49:45 2023 So, Josh's next step is
+'Neurons', but that's not what we want.. so maybe
+it's time to branch out on our own and see how
+fast we mess ourselves up.
+
+[16:
+
+Thu Dec 28 12:11:40 2023 Let's commit anyway.
+
+:16]
+
+:15]
+
+:14]
 
 :13]
 
