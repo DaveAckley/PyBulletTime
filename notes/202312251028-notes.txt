@@ -1,4 +1,4 @@
-{17}  -*-  mode: text; fill-column: 50;  -*-
+{33}  -*-  mode: text; fill-column: 50;  -*-
 [0:
 
 Mon Dec 25 10:28:24 2023 Well I gave up on
@@ -129,3 +129,154 @@ Thu Dec 28 12:11:40 2023 Let's commit anyway.
 
 :11]
 :10]
+[17:
+
+Thu Dec 28 14:41:30 2023 OK so here we are all
+on our own in branch t2brain10, trying to figure
+out some
+
+TODO
+[18: Thu Dec 28 16:04:00 2023
+DONE :18] - Have a per-run simulation directory mfms style
+[19: DONE (buffered and appended)
+:19] - Ditch the fixed-size 'values' vectors in favor
+   of appending to open files
+ - Investigate if adding a cylinder shape to
+   pyrosim might not be completely hopeless
+[31: Sat Dec 30 00:46:05 2023
+DONE :31] - Brainstorm interfaces to the T2-SERCON stuff
+
+:17]
+[20:
+
+Thu Dec 28 16:08:49 2023 So, poking around in
+pyrosim, it looks pretty nailed down to just
+cubes. You have to get all the way down to
+GEOMETRY_SDF to find hardcoded stuff like
+
+        self.string2 = '   <box>'
+
+..but it doesn't seem like it would be that hard
+to make a CYLINDER_GEOMETRY_SDF or something if we
+wanted to..[21:
+
+Thu Dec 28 16:28:03 2023 We'd have to modulate
+LINK_SDF then, heading up, since it goes hard to
+GEOMETRY_SDF[22:
+
+Fri Dec 29 00:05:00 2023 Well I don't think it's
+worth it for next T2sday.
+
+:22]
+
+:21]
+
+:20]
+[23:
+
+Fri Dec 29 00:31:43 2023 So. Interfaces to
+T2-SERCON stuff. Let's remind ourselves what that
+stuff looks like at the moment - maybe we just do
+an in-place merge?[24:
+
+Fri Dec 29 00:52:23 2023 Right now the guts of
+worldserloop.py is just a call to a SerLoop's
+update() method. But we don't want to link that
+iteration to the world sim, at least not
+obviously.
+
+So if we imagine a simulated reaction time of
+perhaps 100ms through the T2 brain. That's pretty
+damn fast in human terms but let's say.
+
+Now, apparently bullet physics is based on 60fps
+or 16.6ms / step, so we'd be talking 6 steps per
+sensorimotor loop. Something like:
+
+WORLD
+ forever
+   wait til 0%5 seconds o'clock
+   recv current forces from spine
+   read current senses from sim
+   send current senses to spine
+   write current forces to sim
+   for six times
+     capture frame for 60fps movie
+     step sim
+   
+SPINE
+ forever
+   wait til 1%5 seconds o'clock
+   recv senses from world
+   send forces to world
+   send senses to brainstem while
+   recv forces from brainstem
+   
+BRAINSTEM
+ forever
+   wait for spinal packet
+   recv senses from packet
+   read forces from brain
+   send forces to brainstem
+   write senses to brain
+[25:
+
+Fri Dec 29 08:06:54 2023 So that sort of seems
+like a plan. How might we connect WORLD and SPINE?
+I'm tempted to use a RAM disk again, to avoid mmap
+pains like I've had before. Could we merge them
+solid, though?
+[26:
+
+Fri Dec 29 08:24:25 2023 Well, SPINE needs to talk
+to the serial port (which currently takes root)
+and that's just pretty damn different that the
+pybullet stuff.
+
+Let's say we'll just talk via files for now, and
+deal with RAM disking them later if we want.
+[27:
+
+Fri Dec 29 08:30:37 2023 We're already writing
+sensor data to the append file. I suppose we could
+stat that and watch for length changes.. But that
+does mix (permanent) 'data' with (ephemeral)
+'comms'. [28:
+
+Fri Dec 29 08:33:04 2023 And right now we're not
+distinguishing between sensor and motor data -
+they're all going to the same space-delimited rows
+in the same file.[29:
+
+Fri Dec 29 08:51:20 2023 OK we refactored into
+three 'data types' - 'sim', 'sensor', and 'motor'.
+At the moment 'sim' is just the step number.[30:
+
+Sat Dec 30 00:39:11 2023 OK, so we did a bunch
+more, and now we've got:
+
+- No immediately visible display at all
+- png images being generated per step
+- step-sensors-motors in 
+[32:
+
+Sat Dec 30 12:53:11 2023 Now we've got
+
+ - pngs being auto-ffmpeg'ed at end
+ - using the 'racecar.urdf' example
+ - trying to get control of it without a lot of
+   success 
+
+:32]
+:30]
+
+:29]
+
+:28]
+
+:27]
+:26]
+:25]
+:24]
+
+:23]
