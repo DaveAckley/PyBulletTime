@@ -1,13 +1,21 @@
 from math import pi, sin
 
-steps = 10000
+simulationBaseDir = "/data/ackley/PART4/code/D/PyBulletTime/data"
+spineCommunicationsDir = "/data/ackley/PART4/code/D/PyBulletTime/spine"
 
-wallSecsPerStep = 1/240
+steps = 8000
+
+wallSecsPerStep = 1/60
 
 backLegFrequency = .01
 backLegFrequencyOffset = -4
 backLegAmplitude = -pi/2
 backLegAmplitudeOffset = +pi/4
+
+backLegFrequency = .0
+backLegFrequencyOffset = -4
+backLegAmplitude = 0
+backLegAmplitudeOffset = 0
 
 frontLegFrequency = .01
 frontLegFrequencyOffset = 1
