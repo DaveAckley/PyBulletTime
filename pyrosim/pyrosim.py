@@ -167,6 +167,20 @@ def Set_Motor_For_Joint(bodyIndex,jointName,controlMode,targetPosition,maxForce)
 
         force          = maxForce)
 
+def Set_Motor_For_Joint_Velocity(bodyIndex,jointName,controlMode,targetVelocity,maxForce):
+
+    p.setJointMotorControl2(
+
+        bodyIndex      = bodyIndex,
+
+        jointIndex     = jointNamesToIndices[jointName],
+
+        controlMode    = controlMode,
+
+        targetVelocity = targetVelocity,
+
+        force          = maxForce)
+    
 def Start_NeuralNetwork(filename):
 
     global filetype
