@@ -1,0 +1,44 @@
+# -*- mode: conf-toml; -*-
+[MrState]
+
+  imagedirs=[
+   "/data/ackley/PART4/papers/ALIFE23/talk",
+   "/data/ackley/AV/STREAMDECK/ICONS/MINE/OBS",
+   "/data/ackley/AV/STREAMDECK/ICONS/72/Large",
+   "/data/ackley/AV/OBS2021/assets/images/",
+   "/data/ackley/PART4/images",
+   "~/Pictures",
+   "."]
+  bindirs=[
+   "/data/ackley/AV/OBS2021/assets/obs-cli",
+   ""                           # include default path
+   ]
+
+[config]
+  worldSDF="world.sdf"
+  planeURDF="plane.urdf"
+  robotURDF="car/racecar.urdf"
+
+[term.SLFL]
+  type=sensor
+  name='Left Front Light'
+  tile=3
+
+[term.SRFL]
+  type=sensor
+  name='Right Front Light'
+  tile=2
+
+[term.MRR]
+  type=motor
+  name='Right Rear Motor'
+  tile=1
+
+[term.MLR]
+  type=motor
+  name='Left Rear Motor'
+  tile=4
+
+
+
+  
