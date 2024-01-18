@@ -123,11 +123,11 @@ class SIMULATION:
         
         camTargetPos = [0, 0, 0]
         cameraUp = [0, 0, 1]
-        cameraPos = [-2, 2, 10]
-        camDistance = 5
+        cameraPos = [-3, 3, 3]
+        camDistance = 4
 
-        pitch = -60.0
-        yaw = 150 #?
+        pitch = -40.0
+        yaw = 50 #?
 
         roll = 0
         upAxisIndex = 2
@@ -152,7 +152,7 @@ class SIMULATION:
                                viewMatrix,
                                projectionMatrix,
                                shadow=1,
-                               lightDirection=[1, 1, 1],
+                               lightDirection=[0, 0, 1],
                                renderer=p.ER_BULLET_HARDWARE_OPENGL)
         #img = p.getCameraImage(w,h, renderer=p.ER_BULLET_HARDWARE_OPENGL)
         rgbim = Image.fromarray(img[2])

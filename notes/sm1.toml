@@ -17,7 +17,7 @@
 [config]
   worldSDF="world.sdf"
   planeURDF="plane.urdf"
-  robotURDF="car/racecar.urdf"
+  robotURDF="genRobot.urdf"
 
 [term.SLFL]
   type=sensor

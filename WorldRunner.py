@@ -47,6 +47,7 @@ if __name__ == '__main__':
     #print("POF",configFile,cfg)
 
     wr = WorldRunner("TestZONG","/dev/ttyUSB0",configFile)
+    print("CNCNCNGJF",wr.config.hash)
     secsPerStep = 1.5
     se = WorldEvents.SecondsStep(wr,secsPerStep)
     wr.EQ.runIn(0, se)
