@@ -6,6 +6,8 @@ import Utils
 from Event import Event
 from PacketProcessor import PacketProcessor
 
+import constants as c
+
 WPP_START = 0
 WPP_RUNNING = 1
 
@@ -16,18 +18,23 @@ class WorldPacketProc(PacketProcessor):
         self.ps = mrs.ps
         
     def matches(self,packet):
-        print("WPPZmat",packet)
-        return re.match(b'(.)W(.)(.)([SM].*)',packet,re.DOTALL) # DOTALL mode for 8BC? None if no match
+        ret = re.match(b'(.)W(.)(.)([SM].*)',packet,re.DOTALL) # DOTALL mode for 8BC? None if no match
+        if ret == None:
+            print("WPPZNOmat",packet)
+        return ret
 
     def handle(self,packet,match):
         hops=Utils.signedByteToIntAt(packet,0)
         dest=Utils.signedByteToInt(match.group(2)[0])
+        impliedLoopLen=dest-hops
+        self.ps.updateLoopLengthIfNeeded(impliedLoopLen)
         nonce=match.group(3)[0]
         pay=match.group(4)
-        print("  PAY0",pay[0],ord(b'S'),b'S')
+        #print("  PAY0",pay[0],ord(b'S'),b'S')
         if pay[0] == ord(b'S'):
-            print("SAWSSP",pay,pay[0])
             self.ps.flagSPacketSeen()
+        elif pay[0] == ord(b'M'):
+            self.ps.flagMPacketSeen()
 
         print("WPPZhdl",packet,
               "hops=",hops,
@@ -75,3 +82,7 @@ class SecondsStep(Event):
         #### begin sensorimotor update
         self.mrs.ps.initSM()
         
+        #### kill sim if at EoU
+        if c.steps > 0 and self.mrs.simulation.step > c.steps:
+            self.mrs.simulation.Generate_Video()
+            exit()

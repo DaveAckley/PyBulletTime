@@ -3,7 +3,7 @@ from math import pi, sin
 simulationBaseDir = "/data/ackley/PART4/code/D/PyBulletTime/data"
 spineCommunicationsDir = "/data/ackley/PART4/code/D/PyBulletTime/spine"
 
-steps = 8000
+steps = 2000
 
 wallSecsPerStep = 1/60
 

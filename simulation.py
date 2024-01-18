@@ -55,7 +55,8 @@ class SIMULATION:
         
         p.setGravity(0,0,-9.8)
         self.planeId = p.loadURDF("plane.urdf")
-        self.robotId = self.robot.Prepare_To_Simulate("car/racecar.urdf",10)
+        #self.robotId = self.robot.Prepare_To_Simulate("car/racecar.urdf",10)
+        self.robotId = self.robot.Prepare_To_Simulate("genRobot.urdf",3)
         p.loadSDF("world.sdf")
         pyrosim.Prepare_To_Simulate(self.robotId)
         self.robot.Prepare_To_Sense()
@@ -122,20 +123,20 @@ class SIMULATION:
         
         camTargetPos = [0, 0, 0]
         cameraUp = [0, 0, 1]
-        cameraPos = [-8, 8, 10]
+        cameraPos = [-2, 2, 10]
+        camDistance = 5
 
-        pitch = -20.0
-        yaw = 75 #?
+        pitch = -60.0
+        yaw = 150 #?
 
         roll = 0
         upAxisIndex = 2
-        camDistance = 12
         pixelWidth = w
         pixelHeight = h
         nearPlane = 0.01
         farPlane = 100
 
-        fov = 90
+        fov = 100
 
         self.step += 1
         i = self.step
@@ -146,8 +147,8 @@ class SIMULATION:
                                                          roll, upAxisIndex)
         aspect = pixelWidth / pixelHeight
         projectionMatrix = p.computeProjectionMatrixFOV(fov, aspect, nearPlane, farPlane)
-        img = p.getCameraImage(pixelWidth,
-                               pixelHeight,
+        img = p.getCameraImage(1*pixelWidth,
+                               1*pixelHeight,
                                viewMatrix,
                                projectionMatrix,
                                shadow=1,

@@ -18,15 +18,18 @@ class MOTOR:
         self.frequency = c.backLegFrequency
         self.frequencyOffset = c.backLegFrequencyOffset
         # XXX Torso_FrontLeg":
-        print("PREACTMOT",self.jointName)
-        if self.jointName == "left_rear_wheel_joint" or self.jointName == "right_rear_wheel_joint" or self.jointName == "left_front_wheel_joint" or self.jointName == "right_front_wheel_joint":
+        print("YYYYPREACTMOT",self.jointName)
+        #if self.jointName == "left_rear_wheel_joint" or self.jointName == "right_rear_wheel_joint" or self.jointName == "left_front_wheel_joint" or self.jointName == "right_front_wheel_joint":
+        if self.jointName == "base_to_lwheel" or self.jointName == "base_to_rwheel":
             print("MTOASXCON",self.jointName)
             self.frequency = .01
             self.frequencyOffset = pi/4
-            self.amplitude = 10
-            if self.jointName == "right_rear_wheel_joint" or self.jointName == "right_front_wheel_joint":
-                self.amplitude = 15
-            self.amplitudeOffset = 5
+            self.amplitude = -10
+            if self.jointName == "base_to_rwheel":
+                self.amplitude = -12
+                self.frequency = .011
+                self.frequencyOffset += .2
+            self.amplitudeOffset = -3
         elif self.jointName == "right_steering_hinge_joint" or self.jointName == "left_steering_hinge_joint":
             print("STEER",self.jointName)
             self.frequency = .01

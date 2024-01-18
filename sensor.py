@@ -6,6 +6,7 @@ import pyrosim.pyrosim as pyrosim
 class SENSOR:
     def __init__(self,linkName,robot):
         self.linkName = linkName
+        print("YYYYSENS",linkName)
         self.robot = robot
         self.Prepare_To_Sense()
 

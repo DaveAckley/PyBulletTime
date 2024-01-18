@@ -6,15 +6,18 @@ from MrState import MrState
 from PacketSpine import PacketSpine
 from simulation import SIMULATION
 import WorldEvents
+import tomlikey as toml
 
 import Utils
 
 import re
 
+import sys
+
 class WorldRunner(MrState):
-    def __init__(self,name,serdev):
+    def __init__(self,name,serdev,cfgFile):
         print("LDSDSL")
-        super().__init__(name)
+        super().__init__(name,cfgFile)
         print("LDSDSLODNE")
 
         self.simulation = SIMULATION()
@@ -35,8 +38,16 @@ class WorldRunner(MrState):
 
 
 if __name__ == '__main__':
-    wr = WorldRunner("TestZONG","/dev/ttyUSB0")
-    secsPerStep = 5
+
+    if len(sys.argv) != 2:
+        sys.exit("Need config file argument")
+    configFile = sys.argv[1]
+    #with open(configFile,"rb") as f:
+    #    cfg = toml.load(f)
+    #print("POF",configFile,cfg)
+
+    wr = WorldRunner("TestZONG","/dev/ttyUSB0",configFile)
+    secsPerStep = 1.5
     se = WorldEvents.SecondsStep(wr,secsPerStep)
     wr.EQ.runIn(0, se)
     ps = WorldEvents.PacketSpineStep(wr,wr.ps,0.1)
