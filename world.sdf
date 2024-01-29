@@ -3,7 +3,7 @@
         <pose>0 2 0.5 0 0 0 </pose>
         <link name="Box10">
             <inertial>
-                <mass>1.0</mass>
+                <mass>0.001</mass>
                 <inertia>
                     <ixx>0.083</ixx>
                     <ixy>0.0</ixy>
@@ -28,10 +28,10 @@
                 </geometry>
 
                 <material name="yellowTT0">
-                  <ambient>1 1 0 1</ambient>
-                  <diffuse>1 1 0 1</diffuse>
+                  <ambient>1 1 0 .5</ambient>
+                  <diffuse>1 1 0 .5</diffuse>
                   <specular>0 0 0 0</specular>
-                  <emissive>1 1 0 1</emissive>
+                  <emissive>1 1 0 .5</emissive>
                 </material>
             </visual>
         </link>

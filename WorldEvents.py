@@ -18,7 +18,7 @@ class WorldPacketProc(PacketProcessor):
         self.ps = mrs.ps
         
     def matches(self,packet):
-        ret = re.match(b'(.)W(.)(.)([SM].*)',packet,re.DOTALL) # DOTALL mode for 8BC? None if no match
+        ret = re.match(b'(.)W(.)(.)([IO].*)',packet,re.DOTALL) # DOTALL mode for 8BC? None if no match
         if ret == None:
             print("WPPZNOmat",packet)
         return ret
@@ -31,10 +31,10 @@ class WorldPacketProc(PacketProcessor):
         nonce=match.group(3)[0]
         pay=match.group(4)
         #print("  PAY0",pay[0],ord(b'S'),b'S')
-        if pay[0] == ord(b'S'):
-            self.ps.flagSPacketSeen()
-        elif pay[0] == ord(b'M'):
-            self.ps.flagMPacketSeen()
+        if pay[0] == ord(b'I'):
+            self.ps.flagIPacketSeen()
+        elif pay[0] == ord(b'O'):
+            self.ps.flagOPacketSeen()
 
         print("WPPZhdl",packet,
               "hops=",hops,

@@ -1,4 +1,6 @@
+import math
 import numpy
+import random
 
 import pybullet as p
 
@@ -11,7 +13,19 @@ class ROBOT:
         self.simulation = simulation
 
     def Prepare_To_Simulate(self,urdf,scale=1):
-        self.robotId = p.loadURDF(urdf,[0,0,1.0],globalScaling=scale)
+        self.robotId = p.loadURDF(urdf,[0,0,.15],globalScaling=scale)
+        pos = [random.uniform(-.5,.5),
+               random.uniform(-.5,.5),
+               .15]
+        euler = [0,
+                 0,
+                 random.uniform(0,2*math.pi)]
+        quatorn = p.getQuaternionFromEuler(euler)
+        print("ROBOPORN",pos,euler,quatorn)
+        p.resetBasePositionAndOrientation(self.robotId,
+                                          pos,
+                                          quatorn)
+
         #self.robotId = p.loadURDF("sphere2red.urdf")
         #self.robotId = p.loadURDF("quadruped/spirit40newer.urdf")
         #self.robotId = p.loadURDF("bicycle/bike.urdf",[0,0,5],globalScaling=2)

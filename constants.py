@@ -3,7 +3,7 @@ from math import pi, sin
 simulationBaseDir = "/data/ackley/PART4/code/D/PyBulletTime/data"
 spineCommunicationsDir = "/data/ackley/PART4/code/D/PyBulletTime/spine"
 
-steps = 500
+steps = 0
 
 wallSecsPerStep = 1/60
 
@@ -22,4 +22,4 @@ frontLegFrequencyOffset = 1
 frontLegAmplitude = .8*pi/2
 frontLegAmplitudeOffset = -pi/4
 
-defaultForce = 50
+defaultForce = 200

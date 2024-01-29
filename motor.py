@@ -1,4 +1,5 @@
 import numpy
+import random
 import constants as c
 from math import pi, sin
 import pyrosim.pyrosim as pyrosim
@@ -25,11 +26,11 @@ class MOTOR:
             self.frequency = .01
             self.frequencyOffset = pi/4
             self.amplitude = -10
-            if self.jointName == "base_to_rwheel":
+            if self.jointName == "base_to_lwheel":
                 self.amplitude = -12
                 self.frequency = .011
                 self.frequencyOffset += .2
-            self.amplitudeOffset = -3
+            self.amplitudeOffset = -4
         elif self.jointName == "right_steering_hinge_joint" or self.jointName == "left_steering_hinge_joint":
             print("STEER",self.jointName)
             self.frequency = .01
@@ -40,9 +41,24 @@ class MOTOR:
             self.amplitudeOffset = 0
 
     def Set_Value(self,step):
-        self.target = self.amplitude*sin(step*self.frequency+
-                                    self.frequencyOffset)+self.amplitudeOffset
-        #print("MOTSEV",self.jointName)
+        robot = self.robot
+        sim = robot.simulation
+        
+        ctrl = False
+        if self.jointName == "base_to_lwheel":
+            self.target = (sim.lastRightYellow-2)/1.5
+            ctrl = True
+        elif self.jointName == "base_to_rwheel":
+            self.target = (sim.lastLeftYellow-2)/1.5
+            ctrl = True
+        else:
+            self.target = self.amplitude*sin(step*self.frequency+
+                                             self.frequencyOffset)+self.amplitudeOffset
+        self.target += random.uniform(-.5, .5)  # Let's not be like deterministic here
+
+        if ctrl:
+            print("MOTSEV",self.jointName,self.target)
+
         self.robot.Save_Data_Item(str(self.target),"motor")
         #self.values[step] = target
         pyrosim.Set_Motor_For_Joint_Velocity(

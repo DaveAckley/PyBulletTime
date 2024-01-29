@@ -2,10 +2,16 @@
 
 my $pi = 3.1415926;
 my $pio2 = $pi/2;
-my ($boxsx,$boxsy,$boxsz,$boxkg) = (0.25, 0.16, 0.04, 1);
 my ($wheellen,$wheelrad) = (0.01, 0.046);
+my ($asym) = (0.000);
+my ($lwheelrad,$rwheelrad) = ($wheelrad-$asym,$wheelrad+$asym);
 my ($wmarkx,$wmarky,$wmarkz,$wmarkoff) = (0.01, 0.02, 0.03, .02);
 my ($wheelx,$wheely,$wheelz) = (-0.05, 0.115, 0.046);
+my ($wheelkg) = (.1);
+
+my ($boxsx,$boxsy,$boxsz,$boxkg) = (0.25, 0.16, 0.04, 1);
+my ($boxpx,$boxpy,$boxpz) = (-$wheelx, 0.0, 0.05);
+
 my ($rwheelrpy) = ("0 $pio2 0");
 my ($lwheelrpy) = ("0 -$pio2 0");
 my ($scanpx,$scanpy,$scanpz) = (0.022, 0.0, 0.01);
@@ -36,6 +42,8 @@ sub inertiaVal {
 }
 
 my $boxinertia = inertiaVal(cuboidInertia($boxsx,$boxsy,$boxsz,$boxkg));
+my $lwheelinertia = inertiaVal(cylinderInertia($lwheelrad,$wheellen,$wheelkg));
+my $rwheelinertia = inertiaVal(cylinderInertia($rwheelrad,$wheellen,$wheelkg));
 print <<"EOF";
 <robot name="test_robot">
 
@@ -45,7 +53,7 @@ print <<"EOF";
       <inertia $boxinertia/>
     </inertial>
     <visual>
-      <origin rpy="0 0 0" xyz="-$wheelx 0 0.085"/>
+      <origin rpy="0 0 0" xyz="$boxpx $boxpy $boxpz"/>
       <geometry>
         <box size="$boxsx $boxsy $boxsz"/>
       </geometry>
@@ -54,7 +62,7 @@ print <<"EOF";
       </material>
     </visual>
     <collision>
-      <origin rpy="0 0 0" xyz="-$wheelx 0 0.085"/>
+      <origin rpy="0 0 0" xyz="$boxpx $boxpy $boxpz"/>
       <geometry>
         <box size="$boxsx $boxsy $boxsz"/>
       </geometry>
@@ -65,9 +73,17 @@ print <<"EOF";
   </link>
   
   <link name="lwheel">
+    <inertial>
+      <mass value="$wheelkg"/>
+      <inertia $lwheelinertia/>
+    </inertial>
+    <contact>
+      <rolling_friction value="0.002"/>
+      <spinning_friction value="0.002"/>
+    </contact>
     <visual>
       <geometry>
-        <cylinder length="$wheellen" radius="$wheelrad"/>
+        <cylinder length="$wheellen" radius="$lwheelrad"/>
       </geometry>
       <origin rpy="$lwheelrpy" xyz="0 0 0"/>
       <material name="black112">
@@ -76,7 +92,7 @@ print <<"EOF";
     </visual>
     <collision>
       <geometry>
-        <cylinder length="$wheellen" radius="$wheelrad"/>
+        <cylinder length="$wheellen" radius="$lwheelrad"/>
       </geometry>
       <origin rpy="$lwheelrpy" xyz="0 0 0"/>
       <material name="black">
@@ -107,13 +123,21 @@ print <<"EOF";
     <parent link="base_link"/>
     <child link="lwheel"/>
     <axis xyz="-1 0 0"/>
-    <origin xyz="$wheelx $wheely $wheelz" rpy="0 0 $pio2"/>
+    <origin xyz="$wheelx $wheely $wheelz" rpy="0 0 -$pio2"/>
   </joint>
   
   <link name="rwheel">
+    <inertial>
+      <mass value="$wheelkg"/>
+      <inertia $rwheelinertia/>
+    </inertial>
+    <contact>
+      <rolling_friction value="0.002"/>
+      <spinning_friction value="0.002"/>
+    </contact>
     <visual>
       <geometry>
-        <cylinder length="$wheellen" radius="$wheelrad"/>
+        <cylinder length="$wheellen" radius="$rwheelrad"/>
       </geometry>
       <origin rpy="$rwheelrpy" xyz="0 0 0"/>
       <material name="black131">
@@ -122,7 +146,7 @@ print <<"EOF";
     </visual>
     <collision>
       <geometry>
-        <cylinder length="$wheellen" radius="$wheelrad"/>
+        <cylinder length="$wheellen" radius="$rwheelrad"/>
       </geometry>
       <origin rpy="$rwheelrpy" xyz="0 0 0"/>
       <material name="black">
@@ -135,7 +159,7 @@ print <<"EOF";
     <parent link="base_link"/>
     <child link="rwheel"/>
     <axis xyz="1 0 0"/>
-    <origin xyz="$wheelx -$wheely $wheelz" rpy="0 0 -$pio2"/>
+    <origin xyz="$wheelx -$wheely $wheelz" rpy="0 0 $pio2"/>
   </joint>
   
   <link name="rwheel_mark">
@@ -181,6 +205,10 @@ print <<"EOF";
   </joint>
   
   <link name="fwheel">
+    <contact>
+      <rolling_friction value="0.000"/>
+      <spinning_friction value="0.000"/>
+    </contact>
     <visual>
       <geometry>
         <cylinder length="0.005" radius="0.020"/>
@@ -207,6 +235,7 @@ print <<"EOF";
     <origin xyz="0.13 0 0.02" rpy="0 0 0"/>
   </joint>
   
+ <!--
   <link name="scanner">
     <visual>
       <geometry>
@@ -224,7 +253,7 @@ print <<"EOF";
     <child link="scanner"/>
     <origin xyz="$jscanpx $jscanpy $jscanpz" rpy="0 0 0"/>
   </joint>
-  
+  -->
 </robot>
 EOF
     
