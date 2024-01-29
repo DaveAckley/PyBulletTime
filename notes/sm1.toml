@@ -21,23 +21,25 @@
 
 [term.SLFL]
   type=sensor
-  name='Left Front Light'
-  tile=3
+  name='Left Front Yellow Detector'
+  tile=0
 
 [term.SRFL]
   type=sensor
-  name='Right Front Light'
-  tile=2
+  name='Right Front Yellow Detector'
+  tile=0
 
 [term.MRR]
   type=motor
+  joint=base_to_rwheel
   name='Right Rear Motor'
   tile=1
 
 [term.MLR]
   type=motor
+  joint=base_to_lwheel
   name='Left Rear Motor'
-  tile=4
+  tile=1
 
 
 
