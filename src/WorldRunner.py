@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import random
 
 from abc import ABC, abstractmethod
@@ -7,6 +8,8 @@ from PacketSpine import PacketSpine
 from simulation import SIMULATION
 import WorldEvents
 import tomlikey as toml
+
+import Spine
 
 import Utils
 
@@ -32,6 +35,44 @@ class WorldRunner(MrState):
         self.pproc = WorldEvents.WorldPacketProc(self,"Wpproc")
         self.ps.registerPacketProcessor(self.pproc)
 
+        self.cproc = WorldEvents.ConfigPacketProc(self,"Cpproc")
+        self.ps.registerPacketProcessor(self.cproc)
+
+    def AcceptPayloadFromTile(self,payload,tilenum):
+        if len(payload) < 1:
+            print("SHORTPAYIGNRD?",payload)
+            return
+        if payload[0] != ord(b'O'):
+            print("NOTOPPLOD?",payload)
+            return
+        print("AACCCLFT",payload)
+
+        terms = self.getRequiredSection('term')
+        termindicesintile = terms['_tiles_'].get(tilenum)
+        tnames = terms['_indices_']
+        print("APFFTRM",termindicesintile)
+        for i in range(1,len(payload),2):
+            idx = payload[i]
+            val = payload[i+1]
+            if idx in termindicesintile:
+                tname = tnames[idx]
+                term = terms.get(tname)
+                if term != None and term['type'] == 'motor':
+                    term['value'] = val
+                    #print("MOTOID",tname,val)
+            else:
+                print("NBABADINDEX",idx,termindicesintile)
+
+    def GetTermForJointIfAny(self,jointname):
+        terms = self.getRequiredSection('term')
+        joints = terms['_joints_']
+        index = joints.get(jointname)
+        if index == None:
+            return None
+        name = terms['_indices_'][index]
+        term = terms[name]
+        return term
+
     def GetPayloadForTile(self,tilenum):
         terms = self.getRequiredSection('term')
         payload = bytearray()
@@ -42,30 +83,16 @@ class WorldRunner(MrState):
         for index in termindices:
             tname = tnames[index]
             term = terms[tname]
-            # so how now?
-            payload+=tname.encode()
+            value = term.get('value',0)
+            #print("GPFT",term,index,tname,value)
+            payload.append(index)
+            payload.append(value)
         
         return payload
     
     def IndexTerminals(self):
-        indices = []
-        tiles = {}       # tile# -> [indices]
         terms = self.getInitializedSection('term',{})
-        for tname in sorted(terms.keys()):
-            if tname.startswith("_"):
-                raise Exception("Illegal term key: "+tname)
-            term = terms[tname]
-            index = len(indices)
-            term['_index_'] = index
-            opttile = term.get('tile')
-            if not opttile == None:
-                if opttile not in tiles:
-                    tiles[opttile] = []
-                tiles[opttile].append(index)
-                indices.append(tname)
-        terms['_indices_'] = indices
-        terms['_tiles_'] = tiles
-        print("INDSL",self.getRequiredSection('term'))
+        Spine.IndexTerminals(terms)
 
     def GetTermValue(self,termtag):
         terms = self.getRequiredSection('term')
@@ -77,7 +104,8 @@ class WorldRunner(MrState):
         ival = int(byteval)
         terms = self.getRequiredSection('term')
         term = terms[termtag]
-        term[termtag] = ival
+        term['value'] = ival
+        print("WRSTV",termtag,ival,term)
         return ival
 
     def EstablishDirs(self):
@@ -110,9 +138,11 @@ if __name__ == '__main__':
 
     wr = WorldRunner("TestZONG","/dev/ttyUSB1",configFile)
     print("CNCNCNGJF",wr.config.hash)
-    secsPerStep = 1
+    secsPerStep = 2
     se = WorldEvents.SecondsStep(wr,secsPerStep)
     wr.EQ.runIn(0, se)
+    ms = WorldEvents.MinutesStep(wr)
+    wr.EQ.runIn(10, ms)
     ps = WorldEvents.PacketSpineStep(wr,wr.ps,0.1)
     wr.EQ.runIn(0, ps)
     wr.mainLoop()

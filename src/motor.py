@@ -43,17 +43,28 @@ class MOTOR:
     def Set_Value(self,step):
         robot = self.robot
         sim = robot.simulation
+        mrs = sim.worldrunner
         
         ctrl = False
-        if self.jointName == "base_to_lwheel":
-            self.target = (sim.lastRightYellow-2)/1.5
-            ctrl = True
-        elif self.jointName == "base_to_rwheel":
-            self.target = (sim.lastLeftYellow-2)/1.5
-            ctrl = True
-        else:
-            self.target = self.amplitude*sin(step*self.frequency+
-                                             self.frequencyOffset)+self.amplitudeOffset
+        jterm = mrs.GetTermForJointIfAny(self.jointName)
+        #print("MOTSVL",self.jointName, jterm)
+        self.target = 0
+        if jterm:
+            val = jterm.get('value')
+            if val:
+                #print("MOTGV",self.jointName,val)
+                self.target = (val-2)/1.5
+                ctrl = True
+
+        # if self.jointName == "base_to_lwheel":
+        #     self.target = (sim.lastRightYellow-2)/1.5
+        #     ctrl = True
+        # elif self.jointName == "base_to_rwheel":
+        #     self.target = (sim.lastLeftYellow-2)/1.5
+        #     ctrl = True
+        # else:
+        #     self.target = self.amplitude*sin(step*self.frequency+
+        #                                      self.frequencyOffset)+self.amplitudeOffset
         self.target += random.uniform(-.5, .5)  # Let's not be like deterministic here
 
         if ctrl:

@@ -1,4 +1,5 @@
 # -*- mode: conf-toml; -*-
+# sm2.toml 202402010647
 [MrState]
 
   imagedirs=[
@@ -18,6 +19,13 @@
   worldSDF="world.sdf"
   planeURDF="plane.urdf"
   robotURDF="genRobot.urdf"
+
+[term.BVCODE]
+  type=sensor
+  name='Beevee Driving Code'
+  # 0: 2A, 1: 2B, 2: 3A, 3: 3B
+  value=2
+  tile=0
 
 [term.SLFL]
   type=sensor

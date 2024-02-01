@@ -38,8 +38,8 @@ class SIMULATION:
         self.physicsClient = p.connect(p.DIRECT)
         p.setAdditionalSearchPath(pybullet_data.getDataPath())
         
-        self.lastLeftYellow = 0
-        self.lastRightYellow = 0
+        #self.lastLeftYellow = 0
+        #self.lastRightYellow = 0
 
         self.imgFont = ImageFont.truetype('fonts/Inconsolata-Regular.ttf',32)
 
@@ -48,6 +48,8 @@ class SIMULATION:
         p.configureDebugVisualizer(p.COV_ENABLE_SEGMENTATION_MARK_PREVIEW,0)
         p.configureDebugVisualizer(p.COV_ENABLE_DEPTH_BUFFER_PREVIEW,0)
         p.configureDebugVisualizer(p.COV_ENABLE_RGB_BUFFER_PREVIEW,0)
+
+        p.configureDebugVisualizer(rgbBackground=[0,0,0])   # let's have blackness beyond the world
 
         egl = pkgutil.get_loader('eglRenderer')
         if False: # XXX WAS: (egl):
@@ -99,7 +101,7 @@ class SIMULATION:
         assert(self.simPath)
         path = self.simPath + "/" + subdir
         Path(path).mkdir(parents=True,exist_ok= not makeit)
-        print("ESSDI",path)
+        #print("ESSDI",path)
         return path
 
     def Set_Up_Simulation_Directory(self):

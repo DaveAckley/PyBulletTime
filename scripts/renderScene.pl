@@ -5,8 +5,8 @@ use Cwd 'abs_path';
 my $scriptDir = abs_path(dirname(__FILE__));
 my $tag = shift @ARGV;
 $tag or die "NEED SIM TAG";
-my $srcpath = "$scriptDir/data/$tag/imgs";
-my $destpath = "$scriptDir/data/merges/$tag.mp4";
+my $srcpath = "$scriptDir/../data/$tag/imgs";
+my $destpath = "$scriptDir/../data/merges/$tag.mp4";
 
 my $ffmpeg = "/data/ackley/AV/FUJIFILM-X-T4/scripts/ffmpeg-git-20220108-amd64-static/ffmpeg";
 
@@ -27,9 +27,9 @@ print("$srcpath -> $destpath\n");
 #my $init = "-f image2 -r 60";
 my $init = "";
 my $persrc = "-pattern_type glob -f image2 -framerate 60";
-my $src0 = "$persrc -i '$srcpath/step*.png'"; 
-my $src1 = "$persrc -i '$srcpath/viewl*.png'";
-my $src2 = "$persrc -i '$srcpath/viewr*.png'";
+my $src0 = "$persrc -i '$srcpath/view/*.png'"; 
+my $src1 = "$persrc -i '$srcpath/SLFL/*.png'";
+my $src2 = "$persrc -i '$srcpath/SRFL/*.png'";
 my $dest = "-r 60 $destpath";
 my $eyesc = 1.5;
 my @filters;
