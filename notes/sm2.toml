@@ -24,7 +24,7 @@
   type=sensor
   name='Beevee Driving Code'
   # 0: 2A, 1: 2B, 2: 3A, 3: 3B
-  value=2
+  value=3
   tile=0
 
 [term.SLFL]
