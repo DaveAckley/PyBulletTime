@@ -107,8 +107,8 @@ print <<"EOF";
       <geometry>
         <box size="$wmarkx $wmarky $wmarkz"/>
       </geometry>
-      <material name="blue339">
-        <color rgba=".3 .3 1 1"/>
+      <material name="blue44a">
+        <color rgba=".4 .4 1 1"/>
       </material>
     </visual>
   </link>
@@ -232,7 +232,7 @@ print <<"EOF";
   <joint name="base_to_fwheel" type="fixed">
     <parent link="base_link"/>
     <child link="fwheel"/>
-    <origin xyz="0.13 0 0.02" rpy="0 0 0"/>
+    <origin xyz="0.14 0 -0.011" rpy="0 0 0"/>
   </joint>
   
  <!--

@@ -14,5 +14,5 @@ closedir(H) or die $!;
 scalar(@datadirs) or die "No data dirs in $datapath";
 my $newest = shift @datadirs;
 print("RENDERING $newest\n");
-exec("$scriptDir/renderScene.pl", $newest);
+exec("$scriptDir/renderScene11.pl", $newest);
 

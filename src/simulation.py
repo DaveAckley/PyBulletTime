@@ -44,12 +44,10 @@ class SIMULATION:
         self.imgFont = ImageFont.truetype('fonts/Inconsolata-Regular.ttf',32)
 
         #TO SUPPRESS SIDEBARS:p.configureDebugVisualizer(p.COV_ENABLE_GUI,0)
-        p.configureDebugVisualizer(p.COV_ENABLE_GUI,0)
+        p.configureDebugVisualizer(p.COV_ENABLE_GUI,0,rgbBackground=[0,0,0])   # let's have blackness beyond the world
         p.configureDebugVisualizer(p.COV_ENABLE_SEGMENTATION_MARK_PREVIEW,0)
         p.configureDebugVisualizer(p.COV_ENABLE_DEPTH_BUFFER_PREVIEW,0)
         p.configureDebugVisualizer(p.COV_ENABLE_RGB_BUFFER_PREVIEW,0)
-
-        p.configureDebugVisualizer(rgbBackground=[0,0,0])   # let's have blackness beyond the world
 
         egl = pkgutil.get_loader('eglRenderer')
         if False: # XXX WAS: (egl):
@@ -155,7 +153,7 @@ class SIMULATION:
         print("CWD:",imgDir,args)
         subprocess.run(args,cwd=imgDir)
 
-    def ComputeCarView(self,sensortag,angle):
+    def ComputeCarView(self,sensortag,angle,count=255):
         distance = 100000
         img_w, img_h = 128, 128
         numb = p.getNumBodies()
@@ -168,28 +166,43 @@ class SIMULATION:
         xA, yA, zA = agent_pos
         zA = zA + 0.4 # make the camera a little higher than the robot
 
-        camerayaw = bodyyaw+angle
-        #print("CMBO11",camerayaw)
+        if angle == 'omni':
+            distfoc = 1
+            xB = xA + .0
+            yB = yA + .0
+            zB = zA + distfoc
+            fov = 179
+            view_matrix = p.computeViewMatrixFromYawPitchRoll(
+                cameraTargetPosition=[xB, yB, zB],
+                distance=distfoc,
+                yaw=90, pitch=90, roll=0,
+                upAxisIndex=2
+            )
 
-        # compute focusing point of the camera
-        xB = xA + cos(camerayaw) * distance
-        yB = yA + sin(camerayaw) * distance
-        zB = zA # + 0.4 # and look a bit upwards?
+        else:
+            camerayaw = bodyyaw+angle
+            #print("CMBO11",camerayaw)
 
-        view_matrix = p.computeViewMatrix(
-            cameraEyePosition=[xA, yA, zA],
-            cameraTargetPosition=[xB, yB, zB],
-            cameraUpVector=[0, 0, 1.0]
-        )
+            # compute focusing point of the camera
+            xB = xA + cos(camerayaw) * distance
+            yB = yA + sin(camerayaw) * distance
+            zB = zA # + 0.4 # and look a bit upwards?
+            fov = 60
+
+            view_matrix = p.computeViewMatrix(
+                cameraEyePosition=[xA, yA, zA],
+                cameraTargetPosition=[xB, yB, zB],
+                cameraUpVector=[0, 0, 1.0]
+            )
 
         projection_matrix = p.computeProjectionMatrixFOV(
-            fov=60, aspect=1.0, nearVal=0.01, farVal=100.0)
+            fov=fov, aspect=1.0, nearVal=0.01, farVal=100.0)
 
         imgs = p.getCameraImage(img_w, img_h,
                                 view_matrix,
                                 projection_matrix, shadow=False,
-#                                renderer=p.ER_TINY_RENDERER)
-                                renderer=p.ER_BULLET_HARDWARE_OPENGL)
+                                renderer=p.ER_TINY_RENDERER)
+#                                renderer=p.ER_BULLET_HARDWARE_OPENGL)
         rgbim = Image.fromarray(imgs[2])
         yellowpix = 0
         ylw = (200,200,0)
@@ -198,7 +211,7 @@ class SIMULATION:
         mindist = 100000000
         avgdist = 0
         samples = 0
-        for i in range(255):
+        for i in range(count):
             x = random.randrange(img_w)
             y = random.randrange(img_h)
             pix = rgbim.getpixel((x,y))
@@ -208,7 +221,7 @@ class SIMULATION:
             #     mindist = sqdist
             # if random.uniform(0,sqdist) < ylwthreshold:
             #     yellowpix += 1
-            if sqdist < ylwthreshold:
+            if sqdist < ylwthreshold and yellowpix < 255:
                 yellowpix += 1
             samples += 1
             avgdist += sqdist
@@ -260,6 +273,7 @@ class SIMULATION:
 
         self.ComputeCarView("SLFL",+.5)   # see .toml for SFLL/SFRL
         self.ComputeCarView("SRFL",-.5)
+        self.ComputeCarView("SUPL",'omni',255*2) # double samples ugh hack
 
         viewMatrix = p.computeViewMatrixFromYawPitchRoll(camTargetPos, camDistance, yaw, pitch,
                                                          roll, upAxisIndex)

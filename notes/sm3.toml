@@ -1,0 +1,61 @@
+# -*- mode: conf-toml; -*-
+# sm3.toml 202402011519 
+[MrState]
+
+  imagedirs=[
+   "/data/ackley/PART4/papers/ALIFE23/talk",
+   "/data/ackley/AV/STREAMDECK/ICONS/MINE/OBS",
+   "/data/ackley/AV/STREAMDECK/ICONS/72/Large",
+   "/data/ackley/AV/OBS2021/assets/images/",
+   "/data/ackley/PART4/images",
+   "~/Pictures",
+   "."]
+  bindirs=[
+   "/data/ackley/AV/OBS2021/assets/obs-cli",
+   ""                           # include default path
+   ]
+
+[config]
+  worldSDF="world.sdf"
+  planeURDF="plane.urdf"
+  robotURDF="genRobot.urdf"
+
+[term.BVREQ]
+  type=sensor
+  name='Beevee Driving Code Request'
+  # 0: 2A, 1: 2B, 2: 3A, 3: 3B
+  value=1
+  tile=0
+
+[term.BVACT]
+  type=motor
+  name='Beevee Driving Code Actual'
+  # 0: 2A, 1: 2B, 2: 3A, 3: 3B
+  tile=0
+
+[term.SUPL]
+  type=sensor
+  name='Upwards Omnidirectional Yellow Detector'
+  tile=0
+
+[term.SLFL]
+  type=sensor
+  name='Left Front Yellow Detector'
+  tile=0
+
+[term.SRFL]
+  type=sensor
+  name='Right Front Yellow Detector'
+  tile=0
+
+[term.MRR]
+  type=motor
+  joint=base_to_rwheel
+  name='Right Rear Motor'
+  tile=0
+
+[term.MLR]
+  type=motor
+  joint=base_to_lwheel
+  name='Left Rear Motor'
+  tile=0

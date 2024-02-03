@@ -1,4 +1,4 @@
-TOML_FILE:=notes/sm2.toml
+TOML_FILE:=notes/sm3.toml
 
 all:	build run
 
