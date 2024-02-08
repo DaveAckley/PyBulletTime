@@ -27,6 +27,7 @@ class SIMULATION:
     def __init__(self,wr):
         self.worldrunner = wr
 
+        self.selfie = False   # set up to take a Beevee selfie
         self.step = 0
 
         self.Set_Up_Simulation_Directory()
@@ -66,16 +67,17 @@ class SIMULATION:
         p.setGravity(0,0,-9.8)
         self.planeId = p.loadURDF("plane.urdf")
         #self.robotId = self.robot.Prepare_To_Simulate("car/racecar.urdf",10)
-        self.robotId = self.robot.Prepare_To_Simulate("genRobot.urdf",3)
+        self.robotId = self.robot.Prepare_To_Simulate("genRobot.urdf",3,self.selfie)
         print("CARID",self.robotId)
 
         sphereScale = 2
-        for c in range(5):
+        for c in range(0 if self.selfie else 5):
             dist = random.uniform(.5,6)
             angle = random.uniform(0,1.5*pi)
             x = cos(angle)*dist
             y = sin(angle)*dist
             urdfob = p.loadURDF("sphere10.urdf",[0,0,1],globalScaling=sphereScale)
+            
             #sdfob = p.loadSDF("world.sdf")
             rot = random.uniform(0,pi)
             quant = p.getQuaternionFromEuler([0,0,rot])
@@ -83,6 +85,11 @@ class SIMULATION:
             #p.resetBasePositionAndOrientation(sdfob[0], [x,y,random.uniform(1.3,1.7)], quant)
             #p.resetBasePositionAndOrientation(sdfob[0], [x,y,random.randint(0,1)/2+.5], quant)
             p.resetBasePositionAndOrientation(urdfob, [x,y,random.randint(0,1)/2+2], quant)
+            p.changeDynamics(urdfob,-1,
+                             lateralFriction=.1,
+                             spinningFriction=.1,
+                             rollingFriction=.1,
+                             restitution=.9)
 
         #sdfob2 = p.loadSDF("world2.sdf")
         #p.resetBasePositionAndOrientation(sdfob2[0], [-1.8,3,1], [0,0,0,1])
@@ -271,9 +278,11 @@ class SIMULATION:
         self.Save_Data(str(i),"sim")
         p.stepSimulation()
 
-        self.ComputeCarView("SLFL",+.5)   # see .toml for SFLL/SFRL
-        self.ComputeCarView("SRFL",-.5)
-        self.ComputeCarView("SUPL",'omni',255*2) # double samples ugh hack
+        self.ComputeCarView("SLFL",+.6)   # see .toml for SFLL/SFRL
+        self.ComputeCarView("SRFL",-.6)
+        #self.ComputeCarView("SUPL",'omni',255*2) # double samples ugh hack
+        self.ComputeCarView("SUPL",'omni',255) # double samples ugh hack
+        #self.ComputeCarView("SUPL",'omni',2) # debug: 2 samples, ~ignore up
 
         viewMatrix = p.computeViewMatrixFromYawPitchRoll(camTargetPos, camDistance, yaw, pitch,
                                                          roll, upAxisIndex)

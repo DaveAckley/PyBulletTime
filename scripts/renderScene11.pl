@@ -51,5 +51,6 @@ my $complex_filter = join(";",@filters);
 my $cmd = "$ffmpeg -y @srcs -filter_complex '$complex_filter' -map '[out]' $dest";
 print("$cmd\n");
 system($cmd);
+print("FINISHED RENDERING $tag\n");
 exit;
 # /data/ackley/AV/FUJIFILM-X-T4/scripts/ffmpeg-git-20220108-amd64-static/ffmpeg  -pattern_type glob  -f image2 -framerate 60 -i '/data/ackley/PART4/code/D/PyBulletTime/data/20240123-075310/imgs/viewl*.png' -pattern_type glob  -f image2 -framerate 60 -i '/data/ackley/PART4/code/D/PyBulletTime/data/20240123-075310/imgs/viewr*.png' -filter_complex hstack=inputs=2 -r 60 /data/ackley/PART4/code/D/PyBulletTime/data/merges/20240123-075310x.mp4

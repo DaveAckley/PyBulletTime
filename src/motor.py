@@ -1,7 +1,7 @@
 import numpy
 import random
 import constants as c
-from math import pi, sin
+from math import pi, sin, sqrt
 import pyrosim.pyrosim as pyrosim
 
 import pybullet as p
@@ -12,8 +12,20 @@ class MOTOR:
         self.jointName = jointName
         #self.values = numpy.zeros(c.steps)
         self.Prepare_To_Act();
+        self.currentVelocity = 0
+        self.velocityAlpha = .95
     
     def Prepare_To_Act(self):
+        ###DEBUG
+        bodyID =  self.robot.robotId
+        for jointIndex in range( 0 , p.getNumJoints(bodyID) ):
+            jointInfo = p.getJointInfo( bodyID , jointIndex )
+            print("GETJOINTIFNO",jointInfo)
+            dyn = p.getDynamicsInfo( bodyID , jointIndex )
+            print("GETDYNIFNO",dyn)
+         ###DEBUG
+        #exit(3)
+
         self.amplitude = c.backLegAmplitude
         self.amplitudeOffset = c.backLegAmplitudeOffset
         self.frequency = c.backLegFrequency
@@ -51,9 +63,12 @@ class MOTOR:
         self.target = 0
         if jterm:
             val = jterm.get('value')
-            if val:
-                #print("MOTGV",self.jointName,val)
-                self.target = (val-2)/1.5
+            if val != None:
+                #modval = (val-0)/4
+                modval = sqrt(val)*2  # fog it go non-linear (but monotonic)
+                # Let's not be like deterministic here
+                self.target = max(0,modval+random.uniform(-.1, .1))  
+                print("MOTGV",self.jointName,val,modval,self.target)
                 ctrl = True
 
         # if self.jointName == "base_to_lwheel":
@@ -65,17 +80,19 @@ class MOTOR:
         # else:
         #     self.target = self.amplitude*sin(step*self.frequency+
         #                                      self.frequencyOffset)+self.amplitudeOffset
-        self.target += random.uniform(-.5, .5)  # Let's not be like deterministic here
 
+        self.currentVelocity = (self.velocityAlpha*self.currentVelocity +
+                                (1-self.velocityAlpha)*self.target)
         if ctrl:
-            print("MOTSEV",self.jointName,self.target)
+            print("MOTSEV",self.jointName,self.target,self.currentVelocity)
 
-        self.robot.Save_Data_Item(str(self.target),"motor")
+        self.robot.Save_Data_Item(str(self.currentVelocity),"motor")
+
         #self.values[step] = target
         pyrosim.Set_Motor_For_Joint_Velocity(
             bodyIndex = self.robot.robotId,
             jointName = self.jointName,
             controlMode = p.VELOCITY_CONTROL,
-            targetVelocity = self.target,
+            targetVelocity = self.currentVelocity,
             maxForce = c.defaultForce)
 

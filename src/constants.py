@@ -22,4 +22,4 @@ frontLegFrequencyOffset = 1
 frontLegAmplitude = .8*pi/2
 frontLegAmplitudeOffset = -pi/4
 
-defaultForce = 200
+defaultForce = 80   # Really max force?
