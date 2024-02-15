@@ -1,0 +1,36 @@
+<?xml version="1.0" ?>
+<robot name="yellow_sphere">
+  <link name="baseLink">
+    <contact>
+      <lateral_friction value="0.20"/>
+      <rolling_friction value="0.01"/>
+      <spinning_friction value="0.01"/>
+      <stiffness value="30000"/>
+      <damping value="1000"/>
+    </contact>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+       <mass value="1.0"/>
+       <inertia ixx=".01" ixy="0" ixz="0" iyy=".01" iyz="0" izz=".01"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+	<mesh filename="textured_sphere_smooth.obj" scale="1 1 1"/>      
+      </geometry>
+      <material name="yellow">
+        <color rgba="1 1 0 1"/>
+        <specular rgb="1 1 0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+<!--	<mesh filename="textured_sphere_smooth.obj" scale="1 1 1"/>      -->
+	 <sphere radius="1.0"/> 
+      </geometry>
+    </collision>
+  </link>
+</robot>
+
