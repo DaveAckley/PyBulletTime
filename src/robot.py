@@ -15,7 +15,7 @@ class ROBOT:
     def Prepare_To_Simulate(self,urdf,scale=1,selfie=False):
         if selfie:
             scale = 12
-        self.robotId = p.loadURDF(urdf,[0,0,.15],globalScaling=scale)
+        self.robotId = p.loadURDF(urdf,[0,0,.15], globalScaling=scale)#, useMaximalCoordinates=True)
         if selfie:
             pos = [-.2,
                    .1,
@@ -48,23 +48,28 @@ class ROBOT:
 
     def Prepare_To_Sense(self):
         self.sensors = {}
+        print("PRP2SNS",pyrosim.linkNamesToIndices)
         for linkName in pyrosim.linkNamesToIndices:
             self.sensors[linkName] = SENSOR(linkName,self)
 
-    def Save_Data_Item(self,s,type):
-        self.simulation.Save_Data(s,type)
+    def Save_Data_Item(self,s,type,name):
+        self.simulation.Save_Data(s,type,name)
 
     def Sense(self,step):
         for name,sense in self.sensors.items():
             sense.Get_Value(step)
 
     def Prepare_To_Act(self):
+        #print("ROBPREPACTIN",self)
         self.motors = {}
         for jointName in pyrosim.jointNamesToIndices:
+            #print("ROBPREPACT",jointName)
             self.motors[jointName] = MOTOR(jointName,self)
 
     def Act(self,step):
+        #print("ROBOTOACT",step,self.motors.items())
         for motorName,motor in self.motors.items():
+            #print("ROBOTOACTMOT",motorName,motor)
             motor.Set_Value(step)
 
             

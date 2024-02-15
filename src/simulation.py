@@ -36,19 +36,30 @@ class SIMULATION:
         self.robot = ROBOT(self)
 
         #self.physicsClient = p.connect(p.GUI)
-        self.physicsClient = p.connect(p.DIRECT)
+        #self.physicsClient = p.connect(p.DIRECT)
+        conid = p.connect(p.SHARED_MEMORY)  # ?? manyspheres does this
+        print(conid)
+        assert(conid >= 0)
+            
         p.setAdditionalSearchPath(pybullet_data.getDataPath())
-        
+
+        # stuff cargo-culted from manyspheres.py
+        p.setInternalSimFlags(0)    
+        p.resetSimulation()
+        p.setPhysicsEngineParameter(numSolverIterations=10) 
+        p.setPhysicsEngineParameter(contactBreakingThreshold=0.001) 
+        p.configureDebugVisualizer(p.COV_ENABLE_RENDERING, 0)
+
         #self.lastLeftYellow = 0
         #self.lastRightYellow = 0
 
         self.imgFont = ImageFont.truetype('fonts/Inconsolata-Regular.ttf',32)
 
         #TO SUPPRESS SIDEBARS:p.configureDebugVisualizer(p.COV_ENABLE_GUI,0)
-        p.configureDebugVisualizer(p.COV_ENABLE_GUI,0,rgbBackground=[0,0,0])   # let's have blackness beyond the world
-        p.configureDebugVisualizer(p.COV_ENABLE_SEGMENTATION_MARK_PREVIEW,0)
-        p.configureDebugVisualizer(p.COV_ENABLE_DEPTH_BUFFER_PREVIEW,0)
-        p.configureDebugVisualizer(p.COV_ENABLE_RGB_BUFFER_PREVIEW,0)
+        p.configureDebugVisualizer(p.COV_ENABLE_GUI,1,rgbBackground=[0,0,0])   # let's have blackness beyond the world
+        p.configureDebugVisualizer(p.COV_ENABLE_SEGMENTATION_MARK_PREVIEW,1)
+        p.configureDebugVisualizer(p.COV_ENABLE_DEPTH_BUFFER_PREVIEW,1)
+        p.configureDebugVisualizer(p.COV_ENABLE_RGB_BUFFER_PREVIEW,1)
 
         egl = pkgutil.get_loader('eglRenderer')
         if False: # XXX WAS: (egl):
@@ -64,20 +75,30 @@ class SIMULATION:
 
         p.setRealTimeSimulation(False)
         
+        p.configureDebugVisualizer(p.COV_ENABLE_RENDERING, 1)
         p.setGravity(0,0,-9.8)
-        self.planeId = p.loadURDF("plane.urdf")
+        self.planeId = p.loadURDF("plane11.urdf", useMaximalCoordinates=True)     # use.. from manyspheres.py
         #self.robotId = self.robot.Prepare_To_Simulate("car/racecar.urdf",10)
         self.robotId = self.robot.Prepare_To_Simulate("genRobot.urdf",3,self.selfie)
         print("CARID",self.robotId)
 
-        sphereScale = 2
+        sphereScale = 1
         for c in range(0 if self.selfie else 5):
             dist = random.uniform(.5,6)
             angle = random.uniform(0,1.5*pi)
             x = cos(angle)*dist
             y = sin(angle)*dist
-            urdfob = p.loadURDF("sphere10.urdf",[0,0,1],globalScaling=sphereScale)
-            
+            urdfob = p.loadURDF("sphere2yellow.urdf",[0,0,1],globalScaling=sphereScale, useMaximalCoordinates=True)
+            sphereMarkId = p.loadTexture("sphere10-texture11.png")
+            #(rid, linkIndex, vgt, dims, mesh, lvfpos, lvforn, rgb) = p.getVisualShapeData(sphereMarkId)
+            list = p.getVisualShapeData(urdfob)
+            assert(len(list)==1)
+            (rid, linkIndex, vgt, dims, mesh, lvfpos, lvforn, rgb) = list[0]
+            print("ZONG ",rid, linkIndex, vgt, dims, mesh, lvfpos, lvforn, rgb)
+            p.resetVisualShapeData(urdfob,-1,0,sphereMarkId)
+            print("BOOND", p.getVisualShapeData(urdfob))
+            #exit(9)
+
             #sdfob = p.loadSDF("world.sdf")
             rot = random.uniform(0,pi)
             quant = p.getQuaternionFromEuler([0,0,rot])
@@ -85,17 +106,20 @@ class SIMULATION:
             #p.resetBasePositionAndOrientation(sdfob[0], [x,y,random.uniform(1.3,1.7)], quant)
             #p.resetBasePositionAndOrientation(sdfob[0], [x,y,random.randint(0,1)/2+.5], quant)
             p.resetBasePositionAndOrientation(urdfob, [x,y,random.randint(0,1)/2+2], quant)
-            p.changeDynamics(urdfob,-1,
-                             lateralFriction=.1,
-                             spinningFriction=.1,
-                             rollingFriction=.1,
-                             restitution=.9)
+            # p.changeDynamics(urdfob,-1,
+            #                  lateralFriction=.1,
+            #                  spinningFriction=.1,
+            #                  rollingFriction=.1,
+            #                  restitution=.9)
 
         #sdfob2 = p.loadSDF("world2.sdf")
         #p.resetBasePositionAndOrientation(sdfob2[0], [-1.8,3,1], [0,0,0,1])
 
+        print("NUMJOINTORG",p.getNumJoints(self.robotId)) # useMaximalCoordinates=True breaks this??
         pyrosim.Prepare_To_Simulate(self.robotId)
+        print("SIMINNT10")
         self.robot.Prepare_To_Sense()
+        print("SIMINNT11")
         self.robot.Prepare_To_Act()
         print("SIMULATIO _INTIF_")
 
@@ -124,6 +148,12 @@ class SIMULATION:
         self.savedSensorData = ""
         self.savedMotorData = ""
 
+        self.simNames = []
+        self.sensorNames = []
+        self.motorNames = []
+
+        self.namesFlushed = False
+
     def Set_Up_Spine_Communications(self):
         self.spinePath = c.spineCommunicationsDir
         Path(self.spinePath).mkdir(parents=True,exist_ok=True)
@@ -131,19 +161,34 @@ class SIMULATION:
         self.savedSensorData = ""
         self.savedMotorData = ""
 
-    def Save_Data(self,data,type):
+    def Save_Packet_Data(self,bytesout,pktsin,bytesin):
+        self.Save_Data(str(bytesout),"sim","bytesout")
+        self.Save_Data(str(pktsin),"sim","pktsin")
+        self.Save_Data(str(bytesin),"sim","bytesin")
+
+    def Save_Data(self,data,type,name):
         if type == "sim":
             self.savedSimData += " " + data
+            if name not in self.simNames:
+                self.simNames.append(name)
         elif type == "sensor":
             self.savedSensorData += " " + data
+            if name not in self.sensorNames:
+                self.sensorNames.append(name)
         elif type == "motor":
             self.savedMotorData += " " + data
+            if name not in self.motorNames:
+                self.motorNames.append(name)
         else:
-            raise Exception("Unknown Save_Data type "+type)
+            raise Exception("Unknown Save_Data type "+type+" "+name)
 
     def Flush_Data(self):
         fullRow = self.savedSimData + self.savedSensorData + self.savedMotorData + "\n"
         with open(self.simPath + "/" + "data.dat","a") as f:
+            if not self.namesFlushed:
+                titles = "# "+ str(self.simNames) + " " + str(self.sensorNames) + " " + str(self.motorNames) + "\n"
+                f.write(titles)
+                self.namesFlushed = True
             f.write(fullRow)
         noMotorRow = self.savedSimData + self.savedSensorData + "\n"
         with open(self.spinePath + "/" + "sensors.dat","w") as f:
@@ -160,7 +205,18 @@ class SIMULATION:
         print("CWD:",imgDir,args)
         subprocess.run(args,cwd=imgDir)
 
+    def radToDDeg(self,rads):
+        degrad = 57.29577951
+        deg = rads*degrad
+        if deg<0:
+            deg += 360
+        assert(deg >= 0 and deg <= 360)
+        dbldeg = int(deg/2)
+        return dbldeg  # 0..180
+
     def ComputeCarView(self,sensortag,angle,count=255):
+        wr = self.worldrunner
+
         distance = 100000
         img_w, img_h = 128, 128
         numb = p.getNumBodies()
@@ -168,10 +224,18 @@ class SIMULATION:
         agent_pos, agent_orn =\
             p.getBasePositionAndOrientation(self.robotId)
         euler = p.getEulerFromQuaternion(agent_orn)
-        bodyyaw = euler[-1]
+        (bodyroll,bodypitch,bodyyaw) = euler
+
+        if angle == 'omni':
+            (ddegroll,ddegpitch,ddegyaw) = (
+                self.radToDDeg(bodyroll),self.radToDDeg(bodypitch),self.radToDDeg(bodyyaw))
+            print("BODROLPIT--->  ",ddegroll,ddegpitch)
+            wr.SetTermValue('BVPITCH',ddegpitch)
+            wr.SetTermValue('BVROLL',ddegroll)
+
         #print("CMBO10",agent_pos,agent_orn,euler,bodyyaw)
         xA, yA, zA = agent_pos
-        zA = zA + 0.4 # make the camera a little higher than the robot
+        zA = zA + 0.35 # make the camera a little higher than the robot
 
         if angle == 'omni':
             distfoc = 1
@@ -215,7 +279,6 @@ class SIMULATION:
         ylw = (200,200,0)
         #ylwthreshold = 2000
         ylwthreshold = 25000
-        mindist = 100000000
         avgdist = 0
         samples = 0
         for i in range(count):
@@ -224,8 +287,6 @@ class SIMULATION:
             pix = rgbim.getpixel((x,y))
             (dx,dy,dz) = (pix[0]-ylw[0],pix[1]-ylw[1],pix[2]-ylw[2])
             sqdist = dx*dx+dy*dy+dz*dz
-            # if sqdist<mindist:
-            #     mindist = sqdist
             # if random.uniform(0,sqdist) < ylwthreshold:
             #     yellowpix += 1
             if sqdist < ylwthreshold and yellowpix < 255:
@@ -233,13 +294,12 @@ class SIMULATION:
             samples += 1
             avgdist += sqdist
         avgdist /= samples
-        print("YLWMINPIX",sensortag,yellowpix,mindist,avgdist)
+        print("YLWMINPIX  ",sensortag,yellowpix)
         draw = ImageDraw.Draw(rgbim)
         draw.text((0,0),str(yellowpix),(55,55,255),font=self.imgFont)
         #rgbim.save(self.imgPath+"/"+sensortag+"{:08}.png".format(self.step)) #FIX FOR LEX
         self.SaveImageInSubdir(rgbim,sensortag)
 
-        wr = self.worldrunner
         wr.SetTermValue(sensortag,yellowpix)
         #if name == "viewl":
         #    self.lastLeftYellow = yellowpix
@@ -275,11 +335,11 @@ class SIMULATION:
         self.stepnow = datetime.now().strftime('%Y%m%d%H%M%S%f')[:-3]
         self.step += 1
         i = self.step
-        self.Save_Data(str(i),"sim")
+        self.Save_Data(str(i),"sim","step#")
         p.stepSimulation()
 
-        self.ComputeCarView("SLFL",+.6)   # see .toml for SFLL/SFRL
-        self.ComputeCarView("SRFL",-.6)
+        self.ComputeCarView("SLFL",+.5)   # see .toml for SFLL/SFRL
+        self.ComputeCarView("SRFL",-.5)
         #self.ComputeCarView("SUPL",'omni',255*2) # double samples ugh hack
         self.ComputeCarView("SUPL",'omni',255) # double samples ugh hack
         #self.ComputeCarView("SUPL",'omni',2) # debug: 2 samples, ~ignore up
@@ -300,6 +360,11 @@ class SIMULATION:
         self.SaveImageInSubdir(rgbim,'view')
         self.robot.Sense(i)
         self.robot.Act(i)
+
+        wr = self.worldrunner
+        (bytesout, pktsin, bytesin) = wr.ps.getBufferSizes()
+        self.Save_Packet_Data(bytesout,pktsin,bytesin)
+        
         self.Flush_Data()
         #time.sleep(c.wallSecsPerStep)
 

@@ -13,7 +13,7 @@ class MOTOR:
         #self.values = numpy.zeros(c.steps)
         self.Prepare_To_Act();
         self.currentVelocity = 0
-        self.velocityAlpha = .95
+        self.velocityAlpha = .75
     
     def Prepare_To_Act(self):
         ###DEBUG
@@ -33,12 +33,12 @@ class MOTOR:
         # XXX Torso_FrontLeg":
         print("YYYYPREACTMOT",self.jointName)
         #if self.jointName == "left_rear_wheel_joint" or self.jointName == "right_rear_wheel_joint" or self.jointName == "left_front_wheel_joint" or self.jointName == "right_front_wheel_joint":
-        if self.jointName == "base_to_lwheel" or self.jointName == "base_to_rwheel":
+        if self.jointName == "base_lwheel" or self.jointName == "base_rwheel":
             print("MTOASXCON",self.jointName)
             self.frequency = .01
             self.frequencyOffset = pi/4
             self.amplitude = -10
-            if self.jointName == "base_to_lwheel":
+            if self.jointName == "base_lwheel":
                 self.amplitude = -12
                 self.frequency = .011
                 self.frequencyOffset += .2
@@ -61,20 +61,24 @@ class MOTOR:
         jterm = mrs.GetTermForJointIfAny(self.jointName)
         #print("MOTSVL",self.jointName, jterm)
         self.target = 0
+        val = None
+        modval = None
         if jterm:
             val = jterm.get('value')
             if val != None:
-                #modval = (val-0)/4
-                modval = sqrt(val)*2  # fog it go non-linear (but monotonic)
+                modval = (val-0)/4 # back to linear now that friction is happier?
+                #modval = sqrt(val)*4  # fog it go non-linear (but monotonic)
                 # Let's not be like deterministic here
                 self.target = max(0,modval+random.uniform(-.1, .1))  
-                print("MOTGV",self.jointName,val,modval,self.target)
+                #print("MOTGV",self.jointName,val,modval,self.target)
                 ctrl = True
+            else:
+                print("MOTGVNO VAL?",self.jointName)
 
-        # if self.jointName == "base_to_lwheel":
+        # if self.jointName == "base_lwheel":
         #     self.target = (sim.lastRightYellow-2)/1.5
         #     ctrl = True
-        # elif self.jointName == "base_to_rwheel":
+        # elif self.jointName == "base_rwheel":
         #     self.target = (sim.lastLeftYellow-2)/1.5
         #     ctrl = True
         # else:
@@ -84,9 +88,9 @@ class MOTOR:
         self.currentVelocity = (self.velocityAlpha*self.currentVelocity +
                                 (1-self.velocityAlpha)*self.target)
         if ctrl:
-            print("MOTSEV",self.jointName,self.target,self.currentVelocity)
+            print("MOTSEV",self.jointName,val,modval,self.target,self.currentVelocity)
 
-        self.robot.Save_Data_Item(str(self.currentVelocity),"motor")
+        self.robot.Save_Data_Item(str(self.currentVelocity),"motor",self.jointName)
 
         #self.values[step] = target
         pyrosim.Set_Motor_For_Joint_Velocity(

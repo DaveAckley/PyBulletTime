@@ -7,19 +7,19 @@ my ($asym) = (0.000);
 my ($lwheelrad,$rwheelrad) = ($wheelrad-$asym,$wheelrad+$asym);
 
 # DON'T FUCK CASUALLY WITH THE FOLLOWING FRICTION NUMBERS!
-my ($wheellateralfric,$wheelrollfric,$wheelspinfric) = (.501, .100, .002); 
+my ($wheellateralfric,$wheelrollfric,$wheelspinfric) = (.510, .110, .002); 
 # MANY BOTHANS DIED TO BRING US THIS INFORMATION!
 
-my ($wheelstiffness,$wheeldamping) = (300000, 1000);
+my ($wheelstiffness,$wheeldamping) = (30000, 1000);
 my ($wmarkx,$wmarky,$wmarkz,$wmarkoff) = (0.01, $wheellen+.002, 0.08, -.0);
 my $wmarkkg = 0.0;
 
 my ($wheelx,$wheely,$wheelz) = (-0.05, 0.115, 0.046);
 my ($wheelkg) = (.300);
 
-my ($boxsx,$boxsy,$boxsz,$boxkg) = (0.25, 0.16, 0.04, 10/2.2);
+my ($boxsx,$boxsy,$boxsz,$boxkg) = (0.25, 0.16, 0.04, 22/2.2);
 my ($boxpx,$boxpy,$boxpz) = (-$wheelx, 0.0, 0.05);
-my ($baselateralfric,$baserollfric,$basespinfric) = (.0001, .0001, .0001);
+my ($baselateralfric,$baserollfric,$basespinfric) = (.00001, .030, .030);
 
 my ($rwheelrpy) = ("0 $pio2 0");
 my ($lwheelrpy) = ("0 -$pio2 0");
@@ -50,6 +50,16 @@ sub cylinderInertia {
     my $izz = 1.0/2.0*$m*$r*$r;
     return ($ixx,$ixy,$ixz,$iyy,$iyz,$izz);
 }
+sub hollowSphereInertia {
+    my ($r,$m) = @_;
+    my $ixx = 2.0/3.0*$m*$r*$r;
+    my $ixy = 0.0;
+    my $ixz = 0.0;
+    my $iyy = 2.0/3.0*$m*$r*$r;
+    my $iyz = 0.0;
+    my $izz = 2.0/3.0*$m*$r*$r;
+    return ($ixx,$ixy,$ixz,$iyy,$iyz,$izz);
+}
 sub inertiaVal {
     my ($ixx,$ixy,$ixz,$iyy,$iyz,$izz) = @_;
     return qq(ixx="$ixx" ixy="$ixy" ixz="$ixz" iyy="$iyy" iyz="$iyz" izz="$izz");
@@ -59,15 +69,17 @@ my $boxinertia = inertiaVal(cuboidInertia($boxsx,$boxsy,$boxsz,$boxkg));
 my $lwheelinertia = inertiaVal(cylinderInertia($lwheelrad,$wheellen,$wheelkg));
 my $rwheelinertia = inertiaVal(cylinderInertia($rwheelrad,$wheellen,$wheelkg));
 my $fwheelinertia = inertiaVal(cylinderInertia($fwheelRadius,$fwheelLen,$fwheelKg));
+my $ballinertia = inertiaVal(hollowSphereInertia(1,1.0));
+#printf(STDERR "BALLINERTIA<%s>\n",$ballinertia);
 
 my $wmarkinertia =
     inertiaVal(cuboidInertia($wmarkx,$wmarky,$wmarkz,$wmarkkg));
 
 
 print <<"EOF";
-<robot name="test_robot">
+<robot name="Beevee">
 
-  <link name="base_link">
+  <link name="base">
     <contact>
       <lateral_friction value="$baselateralfric"/>
       <rolling_friction value="$baserollfric"/>
@@ -129,7 +141,7 @@ print <<"EOF";
     </collision>
   </link>
 
-  <link name="lwheel_mark">
+  <link name="lwheelmark">
     <inertial>
       <mass value="$wmarkkg"/>
       <inertia $wmarkinertia/>
@@ -139,8 +151,8 @@ print <<"EOF";
       <geometry>
         <box size="$wmarkx $wmarky $wmarkz"/>
       </geometry>
-      <material name="blue44a">
-        <color rgba=".4 .4 1 1"/>
+      <material name="blue55a">
+        <color rgba=".5 .5 1 1"/>
       </material>
     </visual>
     <collision>
@@ -151,14 +163,14 @@ print <<"EOF";
     </collision>
   </link>
 
-  <joint name="lwheel_to_lwheel_mark" type="fixed">
+  <joint name="lwheel_lwheelmark" type="fixed">
     <parent link="lwheel"/>
-    <child link="lwheel_mark"/>
+    <child link="lwheelmark"/>
     <origin xyz="0 0 0" rpy="0 0 $pio2"/>
   </joint>
 
-  <joint name="base_to_lwheel" type="continuous">
-    <parent link="base_link"/>
+  <joint name="base_lwheel" type="continuous">
+    <parent link="base"/>
     <child link="lwheel"/>
     <axis xyz="-1 0 0"/>
     <origin xyz="$wheelx $wheely $wheelz" rpy="0 0 -$pio2"/>
@@ -194,14 +206,14 @@ print <<"EOF";
     </collision>
   </link>
   
-  <joint name="base_to_rwheel" type="continuous">
-    <parent link="base_link"/>
+  <joint name="base_rwheel" type="continuous">
+    <parent link="base"/>
     <child link="rwheel"/>
     <axis xyz="1 0 0"/>
     <origin xyz="$wheelx -$wheely $wheelz" rpy="0 0 $pio2"/>
   </joint>
   
-  <link name="rwheel_mark">
+  <link name="rwheelmark">
     <inertial>
       <mass value="$wmarkkg"/>
       <inertia $wmarkinertia/>
@@ -223,13 +235,13 @@ print <<"EOF";
     </collision>
   </link>
 
-  <joint name="rwheel_to_rwheel_mark" type="fixed">
+  <joint name="rwheel_rwheelmark" type="fixed">
     <parent link="rwheel"/>
-    <child link="rwheel_mark"/>
+    <child link="rwheelmark"/>
     <origin xyz="0 0 0" rpy="0 0 -$pio2"/>
   </joint>
 
-  <link name="fwheel_attach">
+  <link name="fattach">
     <visual>
       <geometry>
         <cylinder length="0.060" radius="$fwheelAttachRadius"/>
@@ -247,9 +259,9 @@ print <<"EOF";
     </collision>
   </link>
   
-  <joint name="base_to_fattach" type="fixed">
-    <parent link="base_link"/>
-    <child link="fwheel_attach"/>
+  <joint name="base_fattach" type="fixed">
+    <parent link="base"/>
+    <child link="fattach"/>
     <origin xyz="0 0 0" rpy="0 0 0"/>
   </joint>
   
@@ -280,8 +292,8 @@ print <<"EOF";
     </collision>
   </link>
   
-  <joint name="base_to_fwheel" type="fixed">
-    <parent link="base_link"/>
+  <joint name="base_fwheel" type="fixed">
+    <parent link="base"/>
     <child link="fwheel"/>
     <origin xyz="$b2fwheelPos" rpy="0 0 0"/>
   </joint>
@@ -299,8 +311,8 @@ print <<"EOF";
     </visual>
   </link>
   
-  <joint name="base_to_scanner" type="fixed">
-    <parent link="base_link"/>
+  <joint name="base_scanner" type="fixed">
+    <parent link="base"/>
     <child link="scanner"/>
     <origin xyz="$jscanpx $jscanpy $jscanpz" rpy="0 0 0"/>
   </joint>

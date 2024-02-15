@@ -50,7 +50,7 @@ class WorldRunner(MrState):
         terms = self.getRequiredSection('term')
         termindicesintile = terms['_tiles_'].get(tilenum)
         tnames = terms['_indices_']
-        print("APFFTRM",termindicesintile)
+        #print("APFFTRM",termindicesintile)
         for i in range(1,len(payload),2):
             idx = payload[i]
             val = payload[i+1]
@@ -103,9 +103,11 @@ class WorldRunner(MrState):
         assert(byteval >= 0 and byteval <= 255)
         ival = int(byteval)
         terms = self.getRequiredSection('term')
-        term = terms[termtag]
-        term['value'] = ival
-        print("WRSTV",termtag,ival,term)
+        if termtag in terms:
+            term = terms[termtag]
+            term['value'] = ival
+        else:
+            print(" !!UNKTERM!! ",termtag,ival)
         return ival
 
     def EstablishDirs(self):
@@ -138,7 +140,7 @@ if __name__ == '__main__':
 
     wr = WorldRunner("TestZONG","/dev/ttyUSB1",configFile)
     print("CNCNCNGJF",wr.config.hash)
-    secsPerStep = 2
+    secsPerStep = 3
     se = WorldEvents.SecondsStep(wr,secsPerStep)
     wr.EQ.runIn(0, se)
     ms = WorldEvents.MinutesStep(wr)

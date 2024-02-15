@@ -41,11 +41,11 @@ class WorldPacketProc(PacketProcessor):
             self.ps.flagOPacketSeen()
             self.mrs.AcceptPayloadFromTile(pay,dest)
 
-        print("WPPZhdl",packet,
-              "hops=",hops,
-              "dest=",dest,
-              "nonce=",nonce,
-              "pay=",pay)
+        # print("WPPZhdl",packet,
+        #       "hops=",hops,
+        #       "dest=",dest,
+        #       "nonce=",nonce,
+        #       "pay=",pay)
 
 class ConfigPacketProc(PacketProcessor):
     def __init__(self,mrs,name):
@@ -125,6 +125,7 @@ class SecondsStep(Event):
         self.mrs.simulation.Step()
 
         #### begin sensorimotor update
+        print("  SIMSTEP  ",self.mrs.simulation.step)
         self.mrs.ps.initSM()
         
         #### kill sim if at EoU

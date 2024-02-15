@@ -5,7 +5,7 @@ spineCommunicationsDir = "/data/ackley/PART4/code/D/PyBulletTime/spine"
 
 steps = 0
 
-wallSecsPerStep = 1/60
+#wallSecsPerStep = 1/60
 
 backLegFrequency = .01
 backLegFrequencyOffset = -4
