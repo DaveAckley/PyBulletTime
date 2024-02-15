@@ -42,6 +42,18 @@ def End_Model():
 
     model.Save_End_Tag(f)
 
+def Get_Touch_Normal_Force_For_Link(linkName):
+    pts = p.getContactPoints()
+    desiredLinkIndex = linkNamesToIndices[linkName]
+    touchForce = None
+    for pt in pts:
+        linkIndex = pt[4]
+        if linkIndex == desiredLinkIndex:
+            touchForce = pt[9]
+            break
+    return touchForce
+
+
 def Get_Touch_Sensor_Value_For_Link(linkName):
 
     touchValue = -1.0
@@ -71,12 +83,17 @@ def Prepare_Link_Dictionary(bodyID):
         jointInfo = p.getJointInfo( bodyID , jointIndex )
 
         jointName = jointInfo[1]
+        #print("PYRSMPLD10",jointName, jointIndex)
 
         jointName = jointName.decode("utf-8")
+        #print("PYRSMPLD11",jointName)
 
         jointName = jointName.split("_")
+        #print("PYRSMPLD12",jointName)
+        assert(len(jointName)==2)
 
         linkName = jointName[1]
+        #print("PYRSMPLD13",linkName)
 
         linkNamesToIndices[linkName] = jointIndex
 
