@@ -1,0 +1,6 @@
+set term pdf
+set output "motor-vs-time.pdf"
+set title "Subject: BEEVEE                        Motor Activity                   T2 General Hospital SW\n"
+set xlabel "Time (simulated seconds)"
+set ylabel "Wheel speed"
+plot 'data.dat' using ($1/240):12 w l tit "Left", 'data.dat' using ($1/240):14 w l title "Right"
